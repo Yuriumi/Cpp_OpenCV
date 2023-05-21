@@ -1,23 +1,27 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
+#define LOG(x) std::cout << x << '\n'
+
 int main()
 {
-	cv::Mat image;	// 创建一个空图像
+	cv::Mat image = cv::imread("./img/kawaii.jpg");
 
-	image = cv::imread("./img/kawaii.jpg");	// 读取图像文件
-
-	// 检测读取是否成功
 	if (image.empty())
 	{
-		std::cout << "ERROR : Read image Failed!\n";
-		return -1;
+		LOG("Read Image file Failed!");
 	}
 
-	cv::namedWindow("Image");	// 创建图片显示窗口,可不写
-	cv::imshow("Image", image);	// 在窗口显示图片
+	cv::imshow("Kawaii", image);
 
-	cv::imwrite("./img/1.png", image);	// 将图像保存为png格式
+	LOG("图像的高度为: " << image.rows);	// 矩阵的行数
+	LOG("图像的宽度为: " << image.cols);	// 矩阵的列数
+	LOG("图像的通道数为: " << image.channels());	// 图像色彩通道数
+	LOG("图像的尺寸为: " << image.size);	// 行数 * 列数
+
+	cv::Mat imageKeen(image, cv::Rect(0, 0, 270, 270));
+
+	cv::imshow("Kawaii", imageKeen);
 
 	cv::waitKey(0);
 
