@@ -5,72 +5,81 @@
 
 #define LOG(x) std::cout << x << '\n'
 
-void AddNoise()
+void GrayTransform()
 {
-	cv::Mat image = cv::imread("./img/kawaii.jpg");
-
-	if (image.empty())
-	{
-		LOG("Read Image file Failed!");
-	}
-
-	// 原图像
-	cv::imshow("Kawaii01", image);
-
-	// 加噪图像
-	Salt(image, 5000);
-	cv::imshow("Kawaii02", image);
-}
-
-void BasicFilter()
-{
-	cv::Mat image_in, image_out;
+	cv::Mat image_in, image_out, image_gray;
 	image_in = cv::imread("./img/kawaii.jpg");
 
 	if (image_in.empty())
 	{
-		LOG("Load ERROR!");
+		LOG("Load Image Error!");
 	}
 
-	image_out = cv::Mat(image_in.size(), image_in.type());
-	image_out = image_in.clone();
+	cv::cvtColor(image_in, image_gray, cv::COLOR_BGR2GRAY);
+	cv::imshow("image_gray", image_gray);
 
-	int rows = image_in.rows;
-	int stepx = image_in.channels();
-	int cols = (image_in.cols) * image_in.channels();
+	image_out = image_gray.clone();
 
-	for (int x = 1; x < (rows - 1); x++)
+	for (int i = 0; i < image_gray.rows; i++)
 	{
-		const uchar* previous = image_in.ptr<uchar>(x - 1);
-		const uchar* current = image_in.ptr<uchar>(x);
-		const uchar* next = image_in.ptr<uchar>(x + 1);
-		uchar* output = image_out.ptr<uchar>(x);
-
-		for (int y = stepx; y < (cols - stepx); y++)
-		{
-			output[y] = cv::saturate_cast<uchar>(5 * current[y] - (previous[y] + current[y - stepx] + current[y + stepx] + next[y]));
-		}
+		for (int j = 0; j < image_gray.cols; j++)
+			image_out.at<uchar>(i, j) = 255 - image_gray.at<uchar>(i, j);
 	}
 
-	cv::imshow("image_in", image_in);
+	cv::imshow("image_out", image_out);
+}
+
+void LogarithmTransform()
+{
+	cv::Mat image_in, image_out, image_gray;
+	image_in = cv::imread("./img/kawaii.jpg");
+
+	if (image_in.empty())
+	{
+		LOG("Load Image Error!");
+	}
+
+	cv::cvtColor(image_in, image_gray, cv::COLOR_BGR2GRAY);
+	cv::imshow("image_gray", image_gray);
+
+	image_out = image_gray.clone();
+
+	for (int i = 0; i < image_gray.rows; i++)
+	{
+		for (int j = 0; j < image_gray.cols; j++)
+			image_out.at<uchar>(i, j) = 6 * log((double)(image_gray.at<uchar>(i, j)) + 1);
+	}
+
+	cv::normalize(image_out, image_out, 0, 255, cv::NORM_MINMAX);	// 图像归一化,转换到0 ~ 255
+	cv::convertScaleAbs(image_out, image_out);
 	cv::imshow("image_out", image_out);
 }
 
 int main()
 {
-	cv::Mat image_in, image_out;
+	// Gamma Transform
+	cv::Mat image_in, image_out, image_gray;
 	image_in = cv::imread("./img/kawaii.jpg");
+
 	if (image_in.empty())
 	{
-		LOG("Load ERROR!");
+		LOG("Load Image Error!");
 		return -1;
 	}
 
-	// 创建卷积核(滤波器)
-	cv::Mat kernel = (cv::Mat_<char>(3, 3) << 0, -1, 0, -1, 5, -1, 0, -1, 0);
-	cv::filter2D(image_in, image_out, image_in.depth(), kernel);
+	cv::cvtColor(image_in, image_gray, cv::COLOR_BGR2GRAY);
+	cv::imshow("image_gray", image_gray);
 
-	cv::imshow("image_in", image_in);
+	image_out = image_gray.clone();
+
+	for (int i = 0; i < image_gray.rows; i++)
+	{
+		for (int j = 0; j < image_gray.cols; j++)
+			image_out.at<uchar>(i, j) = 6 * pow((double)image_gray.at<uchar>(i, j), 1);
+	}
+
+	cv::normalize(image_out, image_out, 0, 255, cv::NORM_MINMAX);
+	cv::convertScaleAbs(image_out, image_out);
 	cv::imshow("image_out", image_out);
 
 	cv::waitKey(0);
