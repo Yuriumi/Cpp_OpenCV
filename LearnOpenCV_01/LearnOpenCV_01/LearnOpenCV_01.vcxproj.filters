@@ -21,9 +21,15 @@
     <ClCompile Include="ref\OnMouse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ref\Salt.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ref\OnMouse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ref\Salt.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
